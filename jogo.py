@@ -4,7 +4,9 @@ pygame.init()
 
 FPS = 30
 TELA_WIDTH = 600
-TELA_HEIGHT = 500
+TELA_HEIGHT = 800
+L_MAPA = 224*2
+C_MAPA = 288*2
 janela = pygame.display.set_mode((TELA_WIDTH,TELA_HEIGHT))
 pygame.display.set_caption('Medieval_man')
 
@@ -13,7 +15,8 @@ PLAYER_HEIGHT = 45
 
 def load_assets():
     assets = {}
-    #assets['background'] = 
+    assets['background'] = pygame.image.load('assets/img/Mapa v1-1.png.png').convert_alpha()
+    assets['background'] = pygame.transform.scale(assets['background'],(L_MAPA,C_MAPA))
     assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
     assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
     return assets
@@ -91,7 +94,8 @@ def game_screen(janela):
                             player.speedx -= 8
         all_sprites.update()
 
-        janela.fill((255,255,255))
+        janela.fill((0,0,0))
+        janela.blit(assets['background'],(80,90))
         all_sprites.draw(janela)
 
         pygame.display.update()
