@@ -10,8 +10,13 @@ TELA_WIDTH = 600
 TELA_HEIGHT = 650
 L_MAPA = 224*2
 C_MAPA = 288*2
+
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 45
+
+INIT = 0
+GAME = 1
+QUIT = 2
 
 #Telas principal do jogo
 janela = pygame.display.set_mode((TELA_WIDTH,TELA_HEIGHT))
@@ -20,10 +25,12 @@ pygame.display.set_caption('Medieval_man')
 #assets
 def load_assets():
     assets = {}
-    assets['background'] = pygame.image.load('assets/img/Mapa v1-1.png.png').convert_alpha()
-    assets['background'] = pygame.transform.scale(assets['background'],(L_MAPA,C_MAPA))
+    assets['mapa'] = pygame.image.load('assets/img/Mapa v2-1.png.png').convert_alpha()
+    assets['mapa'] = pygame.transform.scale(assets['background'],(L_MAPA,C_MAPA))
     assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
     assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
+    #assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1png.png').convert_alpha()
+    #assets['zombi'] = pygame.transform.scale(assets['zombi'],(PLAYER_WIDTH,PLAYER_HEIGHT))
     return assets
 
 #classe jogador
@@ -53,6 +60,45 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = TELA_WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+
+#tela inicial do jogo
+def inicial_screen(janela):
+    clock = pygame.time.Clock()
+
+    background = pygame.image.load('assets/img/tela_inicial_jogo.png').convert()
+    background_rect = background.get_rect()
+
+    rodando = True
+    while rodando:
+        clock.tick(FPS)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                state = QUIT
+                rodando = False
+
+            if event.type == pygame.KEYUP:
+                state = GAME
+                rodando = False
+
+        #mostra o tiutlo do jogo e o
+        titulo = pygame.image.load('assets/img/Medieval man title-1.png.png').convert_alpha()
+        titulo = pygame.transform.scale(titulo,(68*5,68*5))
+        titulo_rect = titulo.get_rect()
+        titulo_rect.midtop = (TELA_WIDTH/2 - 10, -40)
+        janela.blit(background,background_rect)
+        janela.blit(titulo,titulo_rect)
+        
+        #mostra a mensagem de precisonar uma tecla
+        fonte = pygame.font.SysFont(None,32)
+        prescione = fonte.render('Prescione uma tecla para iniciar', False, (255,255,255))
+        prescione_rect = prescione.get_rect()
+        prescione_rect.midbottom = (TELA_WIDTH/2, TELA_WIDTH -40)
+        janela.blit(prescione,prescione_rect)
+
+        pygame.display.flip()
+
+    return state
 
 #tela do jogo
 def game_screen(janela):
@@ -87,33 +133,43 @@ def game_screen(janela):
                     key_downs[event.key] = True
                     #verifica quais teclas foram apertadas
                     if event.key == pygame.K_UP:
-                        player.speedy -= 8
+                        player.speedy -= 5
                     if event.key == pygame.K_DOWN:
-                        player.speedy += 8
+                        player.speedy += 5
                     if event.key == pygame.K_LEFT:
-                        player.speedx -= 8
+                        player.speedx -= 5
                     if event.key == pygame.K_RIGHT:
-                        player.speedx += 8
+                        player.speedx += 5
                 #verifica se soltou a tecla
                 if event.type == pygame.KEYUP:
                     if event.key in key_downs and key_downs[event.key]:
                         if event.key == pygame.K_UP:
-                            player.speedy += 8
+                            player.speedy += 5
                         if event.key == pygame.K_DOWN:
-                            player.speedy -= 8
+                            player.speedy -= 5
                         if event.key == pygame.K_LEFT:
-                            player.speedx += 8
+                            player.speedx += 5
                         if event.key == pygame.K_RIGHT:
-                            player.speedx -= 8
+                            player.speedx -= 5
         #Atualiza posição do personagem
         all_sprites.update()
 
         #Gera saídas
         janela.fill((0,0,0))
-        janela.blit(assets['background'],(80,0))
+        janela.blit(assets['mapa'],(80,40))
         all_sprites.draw(janela)
 
         pygame.display.update()
-game_screen(janela)
+
+state = INIT
+while state != QUIT:
+    if state == INIT:
+        inicial_screen(janela)
+    elif state == GAME:
+        game_screen(janela)
+    else:
+        state = QUIT
+
+
 #finalização
 pygame.quit()
