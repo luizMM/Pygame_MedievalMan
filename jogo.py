@@ -158,10 +158,10 @@ def game_screen(janela):
     for i in range(len(mapa)):
         for j in range(len(mapa[0])):
             if mapa[i][j] == 1:
-                x = 100 + (i) * 16
-                y = 100 + (j) * 16
-                parede = Parede(assets['parede'],x,y)
-                all_bricks.append(parede)
+                x = 100 + (j) * 16
+                y = 100 + (i) * 16
+                parede = Parede(x,y,assets)
+                all_bricks.add(parede)
 
 
     key_downs = {}
@@ -207,9 +207,11 @@ def game_screen(janela):
 
         #Gera saídas
         janela.fill((94, 75, 85))
-        #janela.blit(assets['mapa'],(80,40))
+        #janela.blit(assets['parede'],(80,40))
 
         janela.blit(assets['vida'],(25,45))
+
+        all_bricks.draw(janela)
 
         all_sprites.draw(janela)
 
