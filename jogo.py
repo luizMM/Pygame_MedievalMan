@@ -1,6 +1,7 @@
 #importa pacotes
 #inicialização
 import pygame
+from mapa import mapa
 
 pygame.init()
 
@@ -13,6 +14,8 @@ C_MAPA = 288*2
 
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 45
+MONSTER_WIDTH = 55
+MONSTER_HEIGHT = 50
 
 INIT = 0
 GAME = 1
@@ -25,12 +28,14 @@ pygame.display.set_caption('Medieval_man')
 #assets
 def load_assets():
     assets = {}
-    assets['mapa'] = pygame.image.load('assets/img/Mapa v2-1.png.png').convert_alpha()
-    assets['mapa'] = pygame.transform.scale(assets['background'],(L_MAPA,C_MAPA))
+    assets['mapa'] = pygame.image.load('assets/img/Mapa v2-1.png-1.png.png').convert_alpha()
+    assets['mapa'] = pygame.transform.scale(assets['mapa'],(L_MAPA,C_MAPA))
     assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
     assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
-    #assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1png.png').convert_alpha()
-    #assets['zombi'] = pygame.transform.scale(assets['zombi'],(PLAYER_WIDTH,PLAYER_HEIGHT))
+    assets['vida'] = pygame.image.load('assets/img/Coracao_vida-1.png.png').convert_alpha()
+    assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
+    assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
+    assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
     return assets
 
 #classe jogador
@@ -42,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2
-        self.rect.bottom = TELA_HEIGHT
+        self.rect.bottom = TELA_HEIGHT - 86
         self.speedx = 0
         self.speedy = 0
         self.groups = groups
@@ -60,6 +65,31 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = TELA_WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+
+class Zombi(pygame.sprite.Sprite):
+    def __init__(self,groups,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['zombi']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = TELA_WIDTH/2
+        self.rect.bottom = TELA_HEIGHT/2
+        self.speedx = 0
+        self.speedy = 0
+        self.groups = groups
+        self.assets = assets
+    #def update():
+
+class Parede(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.image.load('assets/img/parte_cima-1.png.png').convert
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 #tela inicial do jogo
 def inicial_screen(janela):
@@ -82,11 +112,12 @@ def inicial_screen(janela):
                 rodando = False
 
         #mostra o tiutlo do jogo e o
+        janela.blit(background,background_rect)
+
         titulo = pygame.image.load('assets/img/Medieval man title-1.png.png').convert_alpha()
         titulo = pygame.transform.scale(titulo,(68*5,68*5))
         titulo_rect = titulo.get_rect()
         titulo_rect.midtop = (TELA_WIDTH/2 - 10, -40)
-        janela.blit(background,background_rect)
         janela.blit(titulo,titulo_rect)
         
         #mostra a mensagem de precisonar uma tecla
@@ -108,13 +139,26 @@ def game_screen(janela):
     assets = load_assets()
 
     all_sprites = pygame.sprite.Group()
+    all_monsters = pygame.sprite.Group()
+    all_bricks = pygame.sprite.Group()
     groups = {}
     groups['all_sprites'] = all_sprites
+    groups['all_monsters'] = all_monsters
+    groups['all_bricks'] = all_bricks
 
     player = Player(groups,assets)
     all_sprites.add(player)
+    zombi = Zombi(groups,assets)
+    all_monsters.add(zombi)
+    all_sprites.add(zombi)
+
+    # for i in range(len(mapa)):
+    #     for j in range(len(mapa[0])):
+    #         if mapa[i][j] == 1:
+
 
     key_downs = {}
+    vidas = 3
 
     ACABOU = 0
     JOGANDO = 1
@@ -155,8 +199,11 @@ def game_screen(janela):
         all_sprites.update()
 
         #Gera saídas
-        janela.fill((0,0,0))
-        janela.blit(assets['mapa'],(80,40))
+        janela.fill((94, 75, 85))
+        #janela.blit(assets['mapa'],(80,40))
+
+        janela.blit(assets['vida'],(25,45))
+
         all_sprites.draw(janela)
 
         pygame.display.update()
@@ -164,12 +211,11 @@ def game_screen(janela):
 state = INIT
 while state != QUIT:
     if state == INIT:
-        inicial_screen(janela)
+        state = inicial_screen(janela)
     elif state == GAME:
-        game_screen(janela)
+        state = game_screen(janela)
     else:
         state = QUIT
-
 
 #finalização
 pygame.quit()
