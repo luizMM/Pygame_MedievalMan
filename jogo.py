@@ -54,9 +54,20 @@ class Player(pygame.sprite.Sprite):
         self.groups = groups
         self.assets = assets
     def update(self):
+        #nova posicao
+        bkpx = self.rect.x
+        bkpy = self.rect.y
         #atualiza posição da nave
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        i = (self.rect.x + (PLAYER_WIDTH//2) - 100) // 16
+        j = (self.rect.y + (PLAYER_HEIGHT//2)- 100) // 16
+        #ver se as posicoes e maior que o mapa
+        if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
+            if mapa[j][i] <= 7:
+                self.rect.x = bkpx
+                self.rect.y = bkpy
+                print('nao pode mover')
         #mantém dento da tela
         if self.rect.top < 0:
             self.rect.top = 0
@@ -143,16 +154,21 @@ def game_screen(janela):
     all_sprites = pygame.sprite.Group()
     all_monsters = pygame.sprite.Group()
     all_bricks = pygame.sprite.Group()
+    all_colisions = pygame.sprite.Group()
     groups = {}
     groups['all_sprites'] = all_sprites
     groups['all_monsters'] = all_monsters
     groups['all_bricks'] = all_bricks
+    groups['all_colisions'] = all_colisions
+
+    #all_colisions.add(Parede)
 
     player = Player(groups,assets)
     all_sprites.add(player)
     zombi = Zombi(groups,assets)
     all_monsters.add(zombi)
     all_sprites.add(zombi)
+    all_colisions.add(player)
 
     #renderiza parede
     for i in range(len(mapa)):
@@ -162,6 +178,7 @@ def game_screen(janela):
                 y = 100 + (i) * 16
                 parede = Parede(x,y,assets)
                 all_bricks.add(parede)
+                #all_colisions.add(parede)
 
 
     key_downs = {}
@@ -204,6 +221,12 @@ def game_screen(janela):
                             player.speedx -= 5
         #Atualiza posição do personagem
         all_sprites.update()
+
+        if state == JOGANDO:
+            encostar = pygame.sprite.spritecollide(player,all_bricks,False,pygame.sprite.collide_mask)
+            #if len(encostar) > 0:
+
+            #print(encostar)
 
         #Gera saídas
         janela.fill((94, 75, 85))
