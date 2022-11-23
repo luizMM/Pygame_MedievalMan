@@ -36,6 +36,7 @@ def load_assets():
     assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
     assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
     assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
+    assets['parede'] = pygame.image.load('assets/img/parte_cima-1.png.png').convert()
     return assets
 
 #classe jogador
@@ -82,14 +83,15 @@ class Zombi(pygame.sprite.Sprite):
     #def update():
 
 class Parede(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y,assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load('assets/img/parte_cima-1.png.png').convert
+        self.image = assets['parede']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
 
 #tela inicial do jogo
 def inicial_screen(janela):
@@ -152,9 +154,14 @@ def game_screen(janela):
     all_monsters.add(zombi)
     all_sprites.add(zombi)
 
-    # for i in range(len(mapa)):
-    #     for j in range(len(mapa[0])):
-    #         if mapa[i][j] == 1:
+    #renderiza parede
+    for i in range(len(mapa)):
+        for j in range(len(mapa[0])):
+            if mapa[i][j] == 1:
+                x = 100 + (i) * 16
+                y = 100 + (j) * 16
+                parede = Parede(assets['parede'],x,y)
+                all_bricks.append(parede)
 
 
     key_downs = {}
@@ -219,3 +226,5 @@ while state != QUIT:
 
 #finalização
 pygame.quit()
+
+
