@@ -2,6 +2,7 @@
 #inicialização
 import pygame
 from mapa import mapa
+#from inicial_screen import inicial_screen
 
 pygame.init()
 
@@ -36,7 +37,35 @@ def load_assets():
     assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
     assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
     assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
-    assets['parede'] = pygame.image.load('assets/img/parte_cima-1.png.png').convert()
+    assets['esqueleto'] = pygame.image.load('assets/img/Esqueleto jogo-1.png.png').convert_alpha()
+    assets['esqueleto'] = pygame.transform.scale(assets['esqueleto'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    assets['vampiro'] = pygame.image.load('assets/img/Vampiro jogo-1.png.png').convert_alpha()
+    assets['vampiro'] = pygame.transform.scale(assets['vampiro'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    assets['moeda'] = pygame.image.load('assets/img/Moeda-1.png.png').convert_alpha()
+    assets['moeda'] = pygame.transform.scale(assets['moeda'], (16,16))
+    assets['elixir'] = pygame.image.load('assets/img/Pocao poderosa-1.png.png').convert_alpha()
+    assets['elixir'] = pygame.transform.scale(assets['elixir'], (16,16))
+
+    assets['deitado'] = pygame.image.load('assets/img/Parte deitada-1.png.png').convert()
+    assets['deitado'] = pygame.transform.scale(assets['deitado'], (30,30))
+    assets['cima'] = pygame.image.load('assets/img/Parte cima-1.png.png').convert()
+    assets['cima'] = pygame.transform.scale(assets['cima'], (30,30))
+    assets['baixo'] = pygame.image.load('assets/img/Parte baixo-1.png.png').convert()
+    assets['baixo'] = pygame.transform.scale(assets['baixo'], (30,30))
+    assets['reto'] = pygame.image.load('assets/img/Parte reta-1.png.png').convert()
+    assets['reto'] = pygame.transform.scale(assets['reto'], (30,30))
+    assets['esquerdo'] = pygame.image.load('assets/img/Parte esquerda-1.png.png').convert()
+    assets['esquerdo'] = pygame.transform.scale(assets['esquerdo'], (30,30))
+    assets['direito'] = pygame.image.load('assets/img/Parte direita-1.png.png').convert()
+    assets['direito'] = pygame.transform.scale(assets['direito'], (30,30))
+    assets['sup direito'] = pygame.image.load('assets/img/canto sup direito-1.png.png').convert()
+    assets['sup direito'] = pygame.transform.scale(assets['sup direito'], (30,30))
+    assets['sup esquerdo'] = pygame.image.load('assets/img/canto sup esquerda-1.png.png').convert()
+    assets['sup esquerdo'] = pygame.transform.scale(assets['sup esquerdo'], (30,30))
+    assets['inf direito'] = pygame.image.load('assets/img/canto inf direito-1.png.png').convert()
+    assets['inf direito'] = pygame.transform.scale(assets['inf direito'], (30,30))
+    assets['inf esquerdo'] = pygame.image.load('assets/img/canto inf esquerdo-1.png.png').convert()
+    assets['inf esquerdo'] = pygame.transform.scale(assets['inf esquerdo'], (30,30))
     return assets
 
 #classe jogador
@@ -47,8 +76,8 @@ class Player(pygame.sprite.Sprite):
         self.image = assets['player']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.centerx = TELA_WIDTH/2
-        self.rect.bottom = TELA_HEIGHT - 86
+        self.rect.centerx = TELA_WIDTH/2 + 5
+        self.rect.bottom = TELA_HEIGHT - 90
         self.speedx = 0
         self.speedy = 0
         self.groups = groups
@@ -60,8 +89,8 @@ class Player(pygame.sprite.Sprite):
         #atualiza posição da nave
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        i = (self.rect.x + (PLAYER_WIDTH//2) - 100) // 16
-        j = (self.rect.y + (PLAYER_HEIGHT//2)- 100) // 16
+        i = (self.rect.x + (PLAYER_WIDTH//2) - 95) // 30
+        j = (self.rect.y + (PLAYER_HEIGHT//2)- 65) // 30
         #ver se as posicoes e maior que o mapa
         if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
             if mapa[j][i] <= 7:
@@ -85,24 +114,75 @@ class Zombi(pygame.sprite.Sprite):
         self.image = assets['zombi']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.centerx = TELA_WIDTH/2
+        self.rect.centerx = TELA_WIDTH/2 + 15
         self.rect.bottom = TELA_HEIGHT/2
         self.speedx = 0
         self.speedy = 0
         self.groups = groups
         self.assets = assets
-    #def update():
+    # def update(self):
+    #     bkpx = self.rect.x
+    #     bkpy = self.rect.y
+    #     self.rect.x += self.speedx
+    #     self.rect.y += self.speedy
+
+class Vampiro(pygame.sprite.Sprite):
+    def __init__(self,groups,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['vampiro']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = TELA_WIDTH/2 - 10
+        self.rect.bottom = TELA_HEIGHT/2
+        self.speedx = 0
+        self.speedy = 0
+        self.groups = groups
+        self.assets = assets
+
+class Esqueleto(pygame.sprite.Sprite):
+    def __init__(self,groups,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['esqueleto']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = TELA_WIDTH/2 - 10
+        self.rect.bottom = TELA_HEIGHT/2 + 30
+        self.speedx = 0
+        self.speedy = 0
+        self.groups = groups
+        self.assets = assets
 
 class Parede(pygame.sprite.Sprite):
     def __init__(self,x,y,assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = assets['parede']
+        self.image = assets
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
+class Moeda(pygame.sprite.Sprite):
+    def __init__(self,x,y,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['moeda']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+class Elixir(pygame.sprite.Sprite):
+    def __init__(self,x,y,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['elixir']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 #tela inicial do jogo
 def inicial_screen(janela):
@@ -155,34 +235,103 @@ def game_screen(janela):
     all_monsters = pygame.sprite.Group()
     all_bricks = pygame.sprite.Group()
     all_colisions = pygame.sprite.Group()
+    all_moedas = pygame.sprite.Group()
+    all_elixir = pygame.sprite.Group()
     groups = {}
     groups['all_sprites'] = all_sprites
     groups['all_monsters'] = all_monsters
     groups['all_bricks'] = all_bricks
     groups['all_colisions'] = all_colisions
+    groups['all_moedas'] = all_moedas
+    groups['all_elixir'] = all_elixir
 
     #all_colisions.add(Parede)
 
     player = Player(groups,assets)
     all_sprites.add(player)
+    all_colisions.add(player)
     zombi = Zombi(groups,assets)
     all_monsters.add(zombi)
     all_sprites.add(zombi)
-    all_colisions.add(player)
+    vampiro = Vampiro(groups,assets)
+    all_monsters.add(vampiro)
+    all_sprites.add(vampiro)
+    esqueleto = Esqueleto(groups,assets)
+    all_sprites.add(esqueleto)
+    all_monsters.add(esqueleto)
 
-    #renderiza parede
+
+    #renderiza sprites seguindo a matrix do mapa
     for i in range(len(mapa)):
         for j in range(len(mapa[0])):
-            if mapa[i][j] == 1:
-                x = 100 + (j) * 16
-                y = 100 + (i) * 16
-                parede = Parede(x,y,assets)
+            #renderiza as paredes
+            if mapa[i][j] == 0:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['cima'])
                 all_bricks.add(parede)
-                #all_colisions.add(parede)
+            elif mapa[i][j] == 1:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['baixo'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 2:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['deitado'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 3:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['esquerdo'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 4:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['direito'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 5:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['sup direito'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 6:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['sup esquerdo'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 7:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['inf esquerdo'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 11:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['inf direito'])
+                all_bricks.add(parede)
+            elif mapa[i][j] == 10:
+                x = 95 + (j) * 30
+                y = 65 + (i) * 30
+                parede = Parede(x,y,assets['reto'])
+                all_bricks.add(parede)
+            #renderiza as moedas
+            elif mapa[i][j] == 8:
+                x = (95+6) + (j) * 30
+                y = (65+6) + (i) * 30
+                moeda = Moeda(x,y,assets)
+                all_moedas.add(moeda)
+            #renderiza os elixir
+            elif mapa[i][j] == 9:
+                x = (95+6) + (j) * 30
+                y = (65+6) + (i) * 30
+                elixir = Elixir(x,y,assets)
+                all_elixir.add(elixir)
 
 
     key_downs = {}
     vidas = 3
+    score = 0
 
     ACABOU = 0
     JOGANDO = 1
@@ -222,22 +371,50 @@ def game_screen(janela):
         #Atualiza posição do personagem
         all_sprites.update()
 
+        #verifica se jogador colidiu com as moedas
         if state == JOGANDO:
-            encostar = pygame.sprite.spritecollide(player,all_bricks,False,pygame.sprite.collide_mask)
-            #if len(encostar) > 0:
+            encostar = pygame.sprite.spritecollide(player, all_moedas, True, pygame.sprite.collide_mask)
+            if len(encostar) > 0:
+                score += 100
+        
+        #verifica se jogador colidiu com os monstros
+        if state == JOGANDO:
+            encostou = pygame.sprite.spritecollide(player,all_monsters, False, pygame.sprite.collide_mask)
+            if len(encostou) > 0:
+                player.kill()
+                #vidas -= 1
+                state = ACABOU
+        
+        if state == JOGANDO:
+            encosta = pygame.sprite.spritecollide(player, all_elixir, True, pygame.sprite.collide_mask)
 
-            #print(encostar)
+                #print(encostar)
 
         #Gera saídas
         janela.fill((94, 75, 85))
-        #janela.blit(assets['parede'],(80,40))
+        cor = (0,0,0)
+        pygame.draw.rect(janela,cor,(20,65,60,180))
+        #janela.blit(assets['parede'],(80,40))   94, 75, 85
 
-        janela.blit(assets['vida'],(25,45))
+        janela.blit(assets['vida'], (30,70))
 
+        #desenha as paredes, moedas e elixir
         all_bricks.draw(janela)
+        all_moedas.draw(janela)
+        all_elixir.draw(janela)
 
+        #desenha todsa as sprites na tela
         all_sprites.draw(janela)
 
+        #cria e desenha o score do jogador na tela
+        font = pygame.font.SysFont(None, 40)
+        texto = font.render('{:08d}'.format(score), False, (255,255,255))
+        texto_rect = texto.get_rect()
+        texto_rect.centerx = TELA_WIDTH/2
+        texto_rect.bottom = 50
+        janela.blit(texto,texto_rect)
+
+        #atualza a tela
         pygame.display.update()
 
 state = INIT

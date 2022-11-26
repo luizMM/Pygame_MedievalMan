@@ -1,5 +1,5 @@
 import pygame
-from jogo import FPS,QUIT,GAME,TELA_HEIGHT,TELA_WIDTH
+from jogo import FPS,QUIT,GAME,TELA_WIDTH
 
 def inicial_screen(janela):
     clock = pygame.time.Clock()
@@ -21,11 +21,12 @@ def inicial_screen(janela):
                 rodando = False
 
         #mostra o tiutlo do jogo e o
+        janela.blit(background,background_rect)
+
         titulo = pygame.image.load('assets/img/Medieval man title-1.png.png').convert_alpha()
         titulo = pygame.transform.scale(titulo,(68*5,68*5))
         titulo_rect = titulo.get_rect()
         titulo_rect.midtop = (TELA_WIDTH/2 - 10, -40)
-        janela.blit(background,background_rect)
         janela.blit(titulo,titulo_rect)
         
         #mostra a mensagem de precisonar uma tecla
