@@ -42,6 +42,9 @@ def load_assets():
     assets['esqueleto'] = pygame.transform.scale(assets['esqueleto'], (MONSTER_WIDTH,MONSTER_HEIGHT))
     assets['vampiro'] = pygame.image.load('assets/img/Vampiro jogo-1.png.png').convert_alpha()
     assets['vampiro'] = pygame.transform.scale(assets['vampiro'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    assets['demonio'] = pygame.image.load('assets/img/Demonio-1.png.png').convert_alpha()
+    assets['demonio'] = pygame.transform.scale(assets['demonio'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+
     assets['moeda'] = pygame.image.load('assets/img/Moeda-1.png.png').convert_alpha()
     assets['moeda'] = pygame.transform.scale(assets['moeda'], (16,16))
     assets['elixir'] = pygame.image.load('assets/img/Pocao poderosa-1.png.png').convert_alpha()
@@ -87,7 +90,7 @@ class Player(pygame.sprite.Sprite):
         #nova posicao
         bkpx = self.rect.x
         bkpy = self.rect.y
-        #atualiza posição da nave
+        #atualiza posição do player
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         i = (self.rect.x + (PLAYER_WIDTH//2) - 95) // 30
@@ -117,15 +120,32 @@ class Zombi(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 + 15
         self.rect.bottom = TELA_HEIGHT/2
-        self.speedx = random.randint(0,10)
-        self.speedy = random.randint(0,10)
+        self.speedx = 0
+        self.speedy = 0
         self.groups = groups
         self.assets = assets
     def update(self):
+        if self.speedx == 0 and self.speedy == 0:
+            if random.uniform(0,1) > 0.5:
+                self.speedx = 0
+                self.speedy = random.randint(-5,5)
+            else:
+                self.speedx = random.randint(-5,5)
+                self.speedy = 0
         bkpx = self.rect.x
         bkpy = self.rect.y
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        i = (self.rect.x + (MONSTER_WIDTH//2) - 95) // 30
+        j = (self.rect.y + (MONSTER_HEIGHT//2)- 65) // 30
+        if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
+            if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
+                self.rect.x = bkpx  
+                self.rect.y = bkpy
+                #self.rect.centerx = TELA_WIDTH/2 + 15
+                #self.rect.bottom = TELA_HEIGHT/2
+                self.speedx = 0
+                self.speedy = 0
 
 class Vampiro(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
@@ -149,6 +169,20 @@ class Esqueleto(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 - 10
+        self.rect.bottom = TELA_HEIGHT/2 + 30
+        self.speedx = 0
+        self.speedy = 0
+        self.groups = groups
+        self.assets = assets
+
+class Demonio(pygame.sprite.Sprite):
+    def __init__(self,groups,assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = assets['demonio']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = TELA_WIDTH/2 + 18
         self.rect.bottom = TELA_HEIGHT/2 + 30
         self.speedx = 0
         self.speedy = 0
@@ -260,6 +294,9 @@ def game_screen(janela):
     esqueleto = Esqueleto(groups,assets)
     all_sprites.add(esqueleto)
     all_monsters.add(esqueleto)
+    demonio = Demonio(groups,assets)
+    all_sprites.add(demonio)
+    all_monsters.add(demonio)
 
 
     #renderiza sprites seguindo a matrix do mapa
