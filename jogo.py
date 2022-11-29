@@ -2,6 +2,7 @@
 #inicialização
 import pygame
 from mapa import mapa
+import random
 #from inicial_screen import inicial_screen
 
 pygame.init()
@@ -93,8 +94,8 @@ class Player(pygame.sprite.Sprite):
         j = (self.rect.y + (PLAYER_HEIGHT//2)- 65) // 30
         #ver se as posicoes e maior que o mapa
         if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
-            if mapa[j][i] <= 7:
-                self.rect.x = bkpx
+            if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
+                self.rect.x = bkpx  
                 self.rect.y = bkpy
                 print('nao pode mover')
         #mantém dento da tela
@@ -116,15 +117,15 @@ class Zombi(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 + 15
         self.rect.bottom = TELA_HEIGHT/2
-        self.speedx = 0
-        self.speedy = 0
+        self.speedx = random.randint(0,10)
+        self.speedy = random.randint(0,10)
         self.groups = groups
         self.assets = assets
-    # def update(self):
-    #     bkpx = self.rect.x
-    #     bkpy = self.rect.y
-    #     self.rect.x += self.speedx
-    #     self.rect.y += self.speedy
+    def update(self):
+        bkpx = self.rect.x
+        bkpy = self.rect.y
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
 
 class Vampiro(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
