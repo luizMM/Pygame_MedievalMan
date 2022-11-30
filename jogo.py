@@ -6,6 +6,7 @@ import random
 #from inicial_screen import inicial_screen
 
 pygame.init()
+pygame.mixer.init()
 
 #FPS e tamanhos
 FPS = 30
@@ -34,16 +35,16 @@ def load_assets():
     assets = {}
     assets['mapa'] = pygame.image.load('assets/img/Mapa v2-1.png-1.png.png').convert_alpha()
     assets['mapa'] = pygame.transform.scale(assets['mapa'],(L_MAPA,C_MAPA))
-    assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
-    assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
+    #assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
+    #assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
     assets['vida'] = pygame.image.load('assets/img/Coracao_vida-1.png.png').convert_alpha()
     assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
-    assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
-    assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
-    assets['esqueleto'] = pygame.image.load('assets/img/Esqueleto jogo-1.png.png').convert_alpha()
-    assets['esqueleto'] = pygame.transform.scale(assets['esqueleto'], (MONSTER_WIDTH,MONSTER_HEIGHT))
-    assets['vampiro'] = pygame.image.load('assets/img/Vampiro jogo-1.png.png').convert_alpha()
-    assets['vampiro'] = pygame.transform.scale(assets['vampiro'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    # assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
+    # assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
+    # assets['esqueleto'] = pygame.image.load('assets/img/Esqueleto jogo-1.png.png').convert_alpha()
+    # assets['esqueleto'] = pygame.transform.scale(assets['esqueleto'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    # assets['vampiro'] = pygame.image.load('assets/img/Vampiro jogo-1.png.png').convert_alpha()
+    # assets['vampiro'] = pygame.transform.scale(assets['vampiro'], (MONSTER_WIDTH,MONSTER_HEIGHT))
     #assets['demonio'] = pygame.image.load('assets/img/Demonio-1.png.png').convert_alpha()
     #assets['demonio'] = pygame.transform.scale(assets['demonio'], (MONSTER_WIDTH,MONSTER_HEIGHT))
 
@@ -72,6 +73,10 @@ def load_assets():
     assets['inf direito'] = pygame.transform.scale(assets['inf direito'], (30,30))
     assets['inf esquerdo'] = pygame.image.load('assets/img/canto inf esquerdo-1.png.png').convert()
     assets['inf esquerdo'] = pygame.transform.scale(assets['inf esquerdo'], (30,30))
+
+    #musica do jogo
+    pygame.mixer.music.load('assets/sounds/Medievalman.mp3')
+    pygame.mixer.music.set_volume(1)
     return assets
 
 #classe jogador
@@ -79,7 +84,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
         #Construção personagem
-        self.image = assets['player']
+        self.animation = []
+        self.animation.append(pygame.image.load('assets/img/cavaleiro 2-1.png.png'))
+        self.animation.append(pygame.image.load('assets/img/cavaleiro 2-2.png.png'))
+        self.frame = 0
+        self.image = self.animation[self.frame]
+        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH,PLAYER_HEIGHT))
+        
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 + 5
@@ -89,6 +100,12 @@ class Player(pygame.sprite.Sprite):
         self.groups = groups
         self.assets = assets
     def update(self):
+        #animacao jogador
+        self.frame += 0.08
+        if self.frame >= len(self.animation):
+            self.frame = 0
+        self.image = self.animation[int(self.frame)]
+        self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH,PLAYER_HEIGHT))
         #nova posicao
         bkpx = self.rect.x
         bkpy = self.rect.y
@@ -123,7 +140,6 @@ class Zombi(pygame.sprite.Sprite):
         self.frame = 0
         self.image = self.animation[self.frame]
 
-        self.image = assets['zombi']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 + 15
@@ -169,7 +185,6 @@ class Vampiro(pygame.sprite.Sprite):
         self.image = self.animation[self.frame]
         self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
     
-        self.image = assets['vampiro']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 - 10
@@ -486,6 +501,7 @@ def game_screen(janela):
     state = JOGANDO
 
     #loop principal
+    pygame.mixer.music.play(loops=-1)
     while state != ACABOU:
         clock.tick(FPS)
         #Trata eventos
