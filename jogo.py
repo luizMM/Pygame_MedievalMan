@@ -23,6 +23,8 @@ INIT = 0
 GAME = 1
 QUIT = 2
 
+game_over = False
+
 #Telas principal do jogo
 janela = pygame.display.set_mode((TELA_WIDTH,TELA_HEIGHT))
 pygame.display.set_caption('Medieval_man')
@@ -527,9 +529,9 @@ def game_screen(janela):
         if state == JOGANDO:
             encostou = pygame.sprite.spritecollide(player,all_monsters, False, pygame.sprite.collide_mask)
             if len(encostou) > 0:
-                player.kill()
-                #vidas -= 1
+                player.kill() 
                 state = ACABOU
+
         
         if state == JOGANDO:
             encosta = pygame.sprite.spritecollide(player, all_elixir, True, pygame.sprite.collide_mask)
@@ -562,6 +564,14 @@ def game_screen(janela):
 
         #atualza a tela
         pygame.display.update()
+
+    #game over
+    #if state == ACABOU:
+        #player.kill()
+        #game_over = True
+        #pygame.draw.rect(janela, 'white', [50, 200, 800, 300], 0, 10)
+        #pygame.draw.rect(janela, 'dark gray', [70, 220, 760, 260], 0, 10)
+        #gameover_text = font.render('Game over , press space bar to restart!', True, 'red')
 
 state = INIT
 while state != QUIT:
