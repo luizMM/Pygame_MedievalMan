@@ -14,10 +14,10 @@ TELA_HEIGHT = 650
 L_MAPA = 224*2
 C_MAPA = 288*2
 
-PLAYER_WIDTH = 50
-PLAYER_HEIGHT = 45
-MONSTER_WIDTH = 55
-MONSTER_HEIGHT = 50
+PLAYER_WIDTH = 60
+PLAYER_HEIGHT = 55
+MONSTER_WIDTH = 60
+MONSTER_HEIGHT = 55
 
 INIT = 0
 GAME = 1
@@ -42,8 +42,8 @@ def load_assets():
     assets['esqueleto'] = pygame.transform.scale(assets['esqueleto'], (MONSTER_WIDTH,MONSTER_HEIGHT))
     assets['vampiro'] = pygame.image.load('assets/img/Vampiro jogo-1.png.png').convert_alpha()
     assets['vampiro'] = pygame.transform.scale(assets['vampiro'], (MONSTER_WIDTH,MONSTER_HEIGHT))
-    assets['demonio'] = pygame.image.load('assets/img/Demonio-1.png.png').convert_alpha()
-    assets['demonio'] = pygame.transform.scale(assets['demonio'], (MONSTER_WIDTH,MONSTER_HEIGHT))
+    #assets['demonio'] = pygame.image.load('assets/img/Demonio-1.png.png').convert_alpha()
+    #assets['demonio'] = pygame.transform.scale(assets['demonio'], (MONSTER_WIDTH,MONSTER_HEIGHT))
 
     assets['moeda'] = pygame.image.load('assets/img/Moeda-1.png.png').convert_alpha()
     assets['moeda'] = pygame.transform.scale(assets['moeda'], (16,16))
@@ -142,8 +142,6 @@ class Zombi(pygame.sprite.Sprite):
             if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
                 self.rect.x = bkpx  
                 self.rect.y = bkpy
-                #self.rect.centerx = TELA_WIDTH/2 + 15
-                #self.rect.bottom = TELA_HEIGHT/2
                 self.speedx = 0
                 self.speedy = 0
 
@@ -160,12 +158,38 @@ class Vampiro(pygame.sprite.Sprite):
         self.speedy = 0
         self.groups = groups
         self.assets = assets
+    def update(self):
+        if self.speedx == 0 and self.speedy == 0:
+            if random.uniform(0,1) > 0.5:
+                self.speedx = 0
+                self.speedy = random.randint(-5,5)
+            else:
+                self.speedx = random.randint(-5,5)
+                self.speedy = 0
+        bkpx = self.rect.x
+        bkpy = self.rect.y
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        i = (self.rect.x + (MONSTER_WIDTH//2) - 95) // 30
+        j = (self.rect.y + (MONSTER_HEIGHT//2)- 65) // 30
+        if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
+            if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
+                self.rect.x = bkpx  
+                self.rect.y = bkpy
+                self.speedx = 0
+                self.speedy = 0
 
 class Esqueleto(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = assets['esqueleto']
+        self.animation = []
+        self.animation.append(pygame.image.load('assets/img/Esqueleto jogo-1.png.png'))
+        self.animation.append(pygame.image.load('assets/img/Esqueleto jogo-2.png.png'))
+        self.frame = 0
+        self.image = self.animation[self.frame]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
+
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 - 10
@@ -174,12 +198,45 @@ class Esqueleto(pygame.sprite.Sprite):
         self.speedy = 0
         self.groups = groups
         self.assets = assets
+    def update(self):
+        #animacao do monstro
+        self.frame += 0.12
+        if self.frame >= len(self.animation):
+            self.frame = 0
+        self.image = self.animation[int(self.frame)]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
+
+        if self.speedx == 0 and self.speedy == 0:
+            if random.uniform(0,1) > 0.5:
+                self.speedx = 0
+                self.speedy = random.randint(-5,5)
+            else:
+                self.speedx = random.randint(-5,5)
+                self.speedy = 0
+        bkpx = self.rect.x
+        bkpy = self.rect.y
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        i = (self.rect.x + (MONSTER_WIDTH//2) - 95) // 30
+        j = (self.rect.y + (MONSTER_HEIGHT//2)- 65) // 30
+        if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
+            if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
+                self.rect.x = bkpx  
+                self.rect.y = bkpy
+                self.speedx = 0
+                self.speedy = 0
 
 class Demonio(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = assets['demonio']
+        self.animation = []
+        self.animation.append(pygame.image.load('assets/img/Demonio-1.png.png'))
+        self.animation.append(pygame.image.load('assets/img/Demonio-2.png.png'))
+        self.frame = 0
+        self.image = self.animation[self.frame]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
+
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = TELA_WIDTH/2 + 18
@@ -188,6 +245,33 @@ class Demonio(pygame.sprite.Sprite):
         self.speedy = 0
         self.groups = groups
         self.assets = assets
+    def update(self):
+        #animacao do monstro
+        self.frame += 0.12
+        if self.frame >= len(self.animation):
+            self.frame = 0
+        self.image = self.animation[int(self.frame)]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
+
+        if self.speedx == 0 and self.speedy == 0:
+            if random.uniform(0,1) > 0.5:
+                self.speedx = 0
+                self.speedy = random.randint(-5,5)
+            else:
+                self.speedx = random.randint(-5,5)
+                self.speedy = 0
+        bkpx = self.rect.x
+        bkpy = self.rect.y
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        i = (self.rect.x + (MONSTER_WIDTH//2) - 95) // 30
+        j = (self.rect.y + (MONSTER_HEIGHT//2)- 65) // 30
+        if i >= 0 and i < len(mapa[0]) and j >= 0 and j < len(mapa):
+            if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
+                self.rect.x = bkpx  
+                self.rect.y = bkpy
+                self.speedx = 0
+                self.speedy = 0
 
 class Parede(pygame.sprite.Sprite):
     def __init__(self,x,y,assets):
