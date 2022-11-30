@@ -23,8 +23,9 @@ MONSTER_HEIGHT = 55
 INIT = 0
 GAME = 1
 QUIT = 2
+OVER = 3
 
-game_over = False
+#game_over = False
 
 #Telas principal do jogo
 janela = pygame.display.set_mode((TELA_WIDTH,TELA_HEIGHT))
@@ -35,10 +36,11 @@ def load_assets():
     assets = {}
     assets['mapa'] = pygame.image.load('assets/img/Mapa v2-1.png-1.png.png').convert_alpha()
     assets['mapa'] = pygame.transform.scale(assets['mapa'],(L_MAPA,C_MAPA))
+    assets["score_font"] = pygame.font.Font('assets/font/PressStart2P.ttf', 28)
     #assets['player'] = pygame.image.load('assets/img/cavaleiro 2-1.png.png').convert_alpha()
     #assets['player'] = pygame.transform.scale(assets['player'],(PLAYER_WIDTH,PLAYER_HEIGHT))
-    assets['vida'] = pygame.image.load('assets/img/Coracao_vida-1.png.png').convert_alpha()
-    assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
+    #assets['vida'] = pygame.image.load('assets/img/Coracao_vida-1.png.png').convert_alpha()
+    #assets['vida'] = pygame.transform.scale(assets['vida'],(40,40))
     # assets['zombi'] = pygame.image.load('assets/img/Zombi jogo-1.png.png').convert_alpha()
     # assets['zombi'] = pygame.transform.scale(assets['zombi'],(MONSTER_WIDTH,MONSTER_HEIGHT))
     # assets['esqueleto'] = pygame.image.load('assets/img/Esqueleto jogo-1.png.png').convert_alpha()
@@ -119,7 +121,7 @@ class Player(pygame.sprite.Sprite):
             if mapa[j][i] in [0,1,2,3,4,5,6,7,10,11]:
                 self.rect.x = bkpx  
                 self.rect.y = bkpy
-                print('nao pode mover')
+                #print('nao pode mover')
         #mantém dento da tela
         if self.rect.top < 0:
             self.rect.top = 0
@@ -344,6 +346,7 @@ class Elixir(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+#assets = load_assets()
 #tela inicial do jogo
 def inicial_screen(janela):
     clock = pygame.time.Clock()
@@ -381,6 +384,22 @@ def inicial_screen(janela):
         janela.blit(prescione,prescione_rect)
 
         pygame.display.flip()
+
+    return state
+
+def game_over_screen(janela):
+
+    cabou = True
+    while cabou:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                state = QUIT
+                cabou = False
+            if event.type == pygame.KEYUP:
+                state = GAME
+                cabou = False
+
+        janela.fill((0,0,0))
 
     return state
 
@@ -540,27 +559,25 @@ def game_screen(janela):
             encostar = pygame.sprite.spritecollide(player, all_moedas, True, pygame.sprite.collide_mask)
             if len(encostar) > 0:
                 score += 100
-        
+                
         #verifica se jogador colidiu com os monstros
         if state == JOGANDO:
             encostou = pygame.sprite.spritecollide(player,all_monsters, False, pygame.sprite.collide_mask)
             if len(encostou) > 0:
-                player.kill() 
+                player.kill()
                 state = ACABOU
-
         
         if state == JOGANDO:
             encosta = pygame.sprite.spritecollide(player, all_elixir, True, pygame.sprite.collide_mask)
-
+            #if len(all_moedas) == 0:
                 #print(encostar)
 
         #Gera saídas
         janela.fill((94, 75, 85))
-        cor = (0,0,0)
-        pygame.draw.rect(janela,cor,(20,65,60,180))
-        #janela.blit(assets['parede'],(80,40))   94, 75, 85
 
-        janela.blit(assets['vida'], (30,70))
+        #renderiza as vidas
+        vida_surface = assets["score_font"].render(chr(9829)*vidas, True, (255,0,0))
+        janela.blit(vida_surface, (20,TELA_HEIGHT-35))
 
         #desenha as paredes, moedas e elixir
         all_bricks.draw(janela)
@@ -595,6 +612,8 @@ while state != QUIT:
         state = inicial_screen(janela)
     elif state == GAME:
         state = game_screen(janela)
+    elif state == OVER:
+        state = game_over_screen(janela)
     else:
         state = QUIT
 
