@@ -148,7 +148,13 @@ class Zombi(pygame.sprite.Sprite):
 class Vampiro(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
-
+        self.animation = []
+        self.animation.append(pygame.image.load('assets/img/Vampiro jogo-1.png.png'))
+        self.animation.append(pygame.image.load('assets/img/Vampiro jogo-2.png.png'))
+        self.frame = 0
+        self.image = self.animation[self.frame]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
+    
         self.image = assets['vampiro']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -159,6 +165,12 @@ class Vampiro(pygame.sprite.Sprite):
         self.groups = groups
         self.assets = assets
     def update(self):
+        #animacao esqueleto
+        self.frame += 0.12
+        if self.frame >= len(self.animation):
+            self.frame = 0
+        self.image = self.animation[int(self.frame)]
+        self.image = pygame.transform.scale(self.image, (MONSTER_WIDTH,MONSTER_HEIGHT))
         if self.speedx == 0 and self.speedy == 0:
             if random.uniform(0,1) > 0.5:
                 self.speedx = 0
