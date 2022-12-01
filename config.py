@@ -1,15 +1,17 @@
 from os import path
 
-IMG_DIR = path.join(path.dirname(__file__), 'assets', 'img')
-SND_DIR = path.join(path.dirname(__file__), 'assets', 'snd')
-
+FPS = 30
 TELA_WIDTH = 600
-TELA_HEIGHT = 500
+TELA_HEIGHT = 650
+L_MAPA = 224*2
+C_MAPA = 288*2
 
-PLAYER_WIDTH = 17
-PLAYER_HEIGHT = 13
+PLAYER_WIDTH = 60
+PLAYER_HEIGHT = 55
+MONSTER_WIDTH = 60
+MONSTER_HEIGHT = 55
 
-FPS = 60
-INICIO = 0
+INIT = 0
 GAME = 1
 QUIT = 2
+OVER = 3
